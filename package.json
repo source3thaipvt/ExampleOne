@@ -7,7 +7,14 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "realDevice": "adb reverse tcp:8081 tcp:8081",
+    "buildApk": "cd android && ./gradlew assembleRelease",
+    "buildAab": "cd android && ./gradlew bundleRelease",
+    "link": "react-native link",
+    "podm1": "arch -x86_64 pod install --repo-update",
+    "pod": "yarn install && cd ios && rm -rf Podfile.lock && rm -rf Pods && pod install --repo-update"
+   
   },
   "dependencies": {
     "react": "18.2.0",
