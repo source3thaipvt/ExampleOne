@@ -12,12 +12,14 @@ interface Props extends TouchableOpacityProps {
 const TouchButton = (props: Props) => {
   return (
     <TouchableOpacity
-      {...props}
-      style={{
-        padding: 10,
-        paddingHorizontal: 18,
-        ...props.containerStyles
-      }}
+    style={{
+      padding: 10,
+      paddingHorizontal: 18,
+      justifyContent: 'center',
+      alignItems:'center',
+      ...props.containerStyles
+    }}
+    {...props}
     >
       {props.title ? <TextViewBase>{props?.title ?? 'Defaut Button'}</TextViewBase> :
         props.icon && <Image source={props.icon ?? images.ic_back_black} style={{ height: 14, width: 14 }} resizeMode='contain' />}

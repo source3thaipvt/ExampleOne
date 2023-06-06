@@ -17,10 +17,14 @@
     "pod": "yarn install && cd ios && rm -rf Podfile.lock && rm -rf Pods && pod install --repo-update"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.18.2",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
+    "axios": "^1.4.0",
     "formik": "^2.4.1",
     "lodash": "^4.17.21",
+    "md5": "^2.3.0",
+    "moment": "^2.29.4",
     "react": "18.2.0",
     "react-native": "0.71.8",
     "react-native-gesture-handler": "^2.10.2",

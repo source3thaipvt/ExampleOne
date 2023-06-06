@@ -12,20 +12,40 @@ export interface THeaderProps {
     iconLeft?: any,
     iconRight?: any,
     title?: string,
-    onPressLeft?: void,
-    onPressRight?: void,
+    onPressLeft?: () => void,
+    onPressRight?: () => void,
 
 }
 
 const HeaderApp = (props: THeaderProps) => {
-    console.log('navigation', props.navigation);
     return (
         <View style={{ ...styles.container, ...props?.stylesContainer }}>
-            {props.iconLeft && <TouchButton icon={props.iconLeft ?? images.ic_back_black} containerStyles={{ ...styles.iconLeft }} />}
-            {props.title && <View style={{ ...styles.viewTitle, ...props.stylesTitle }}>
-                <TextViewBase title='Header App' textStyles={{ ...styles.textTitle }} />
-            </View>}
-            {props.iconRight && <TouchButton icon={props.iconRight ?? images.ic_back_black} containerStyles={{ ...styles.iconRight }} />}
+            {props.iconLeft &&
+                <TouchButton
+                    onPress={()=>{
+                        if (props.onPressLeft) {
+                            props.onPressLeft
+                        } else {
+                            props.navigation.goBack()
+                        }
+                    }}
+                    icon={props.iconLeft ?? images.ic_back_black}
+                    containerStyles={{ ...styles.iconLeft }} />}
+            {props.title &&
+                <View style={{ ...styles.viewTitle, ...props.stylesTitle }}>
+                    <TextViewBase title='Header App' textStyles={{ ...styles.textTitle }} />
+                </View>}
+            {props.iconRight &&
+                <TouchButton
+                    onPress={()=>{
+                        if (props.onPressRight) {
+                            props.onPressRight
+                        } else {
+                            props.navigation.goBack()
+                        }
+                    }}
+                    icon={props.iconRight ?? images.ic_back_black}
+                    containerStyles={{ ...styles.iconRight }} />}
         </View>
     )
 }
@@ -49,16 +69,16 @@ const styles = StyleSheet.create({
         elevation: 1
     },
     iconLeft: {
-        backgroundColor: 'red',
         width: 50,
         position: 'absolute',
-        left: 0
+        left: 0,
+        zIndex: 1
     },
     iconRight: {
-        backgroundColor: 'red',
         width: 50,
         position: 'absolute',
-        right: 0
+        right: 0,
+        zIndex: 1
     },
     viewTitle: {
         flex: 1,

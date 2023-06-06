@@ -10,7 +10,10 @@ interface Props extends TextProps {
 const TextViewBase = (props: Props) => {
     return (
         <View style={{ ...props.containerStyles }}>
-            <Text style={{ ...styles.text, ...props.textStyles }}>
+            <Text
+                style={{ ...styles.text, ...props.textStyles }}
+                {...props}
+            >
                 {props?.title}
                 {props.children}
             </Text>
@@ -21,7 +24,8 @@ const TextViewBase = (props: Props) => {
 export default TextViewBase
 
 const styles = StyleSheet.create({
-    text:{
+    text: {
         fontSize: 14,
+        letterSpacing: 1.8
     }
 })

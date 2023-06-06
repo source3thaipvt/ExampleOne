@@ -5,7 +5,7 @@ import HeaderApp from '../../component/HeaderApp'
 const HomeScreen = (props: any) => {
     return (
         <View>
-            <HeaderApp navigation={props.navigation} title='Trang chủ' />
+            <HeaderApp navigation={props.navigation} title='Trang chủ' iconLeft={true}/>
             <Text>HomeScreen</Text>
         </View>
     )
