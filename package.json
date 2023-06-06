@@ -8,17 +8,26 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
+    "genimg": "node genimg src/assets/images --output src/res/images.tsx --name images",
     "realDevice": "adb reverse tcp:8081 tcp:8081",
     "buildApk": "cd android && ./gradlew assembleRelease",
     "buildAab": "cd android && ./gradlew bundleRelease",
     "link": "react-native link",
     "podm1": "arch -x86_64 pod install --repo-update",
     "pod": "yarn install && cd ios && rm -rf Podfile.lock && rm -rf Pods && pod install --repo-update"
-   
   },
   "dependencies": {
+    "@react-navigation/native": "^6.1.6",
+    "@react-navigation/stack": "^6.3.16",
+    "formik": "^2.4.1",
+    "lodash": "^4.17.21",
     "react": "18.2.0",
-    "react-native": "0.71.8"
+    "react-native": "0.71.8",
+    "react-native-gesture-handler": "^2.10.2",
+    "react-native-safe-area-context": "^4.5.3",
+    "react-native-screens": "^3.20.0",
+    "react-navigation": "^4.4.4",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
