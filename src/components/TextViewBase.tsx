@@ -1,10 +1,12 @@
 import { StyleSheet, Text, TextProps, TextStyle, View, ViewStyle } from 'react-native'
-import React from 'react'
+import React, { ReactNode } from 'react'
 
-interface Props extends TextProps {
+interface Props {
+    children?: ReactNode
     containerStyles?: ViewStyle,
     textStyles?: TextStyle,
-    title?: string
+    title?: string,
+    textProps?: TextProps,
 }
 
 const TextViewBase = (props: Props) => {
@@ -12,7 +14,7 @@ const TextViewBase = (props: Props) => {
         <View style={{ ...props.containerStyles }}>
             <Text
                 style={{ ...styles.text, ...props.textStyles }}
-                {...props}
+                {...props.textProps}
             >
                 {props?.title}
                 {props.children}

@@ -11,7 +11,7 @@ import { loginValidateSchema } from '../../../utils/validations'
 // import { showToast } from '../../../utils/Utils'
 
 const LoginScreen = (props: any) => {
-  
+ const [isHide, setIsHide] = useState(true)
   const onSubmit = (values: any) => {
     console.log(values)
     // showToast('okde', 2000)
@@ -20,7 +20,7 @@ const LoginScreen = (props: any) => {
     }else{
       console.log('Tên đăng nhập hoặc mật khẩu không đúng');
     }
-    
+
   }
 
   return (
@@ -42,7 +42,7 @@ const LoginScreen = (props: any) => {
               isError={true}
               captionError={errors.username}
               placeholder='Tên đăng nhập hoặc số điện thoại'
-              onBlur={handleBlur('password')}
+              onBlur={handleBlur('username')}
               textInputProps={{
                 placeholderTextColor: 'gray',
                 value: values.username
@@ -58,10 +58,18 @@ const LoginScreen = (props: any) => {
               onBlur={handleBlur('password')}
               textInputProps={{
                 placeholderTextColor: 'gray',
-                secureTextEntry: true,
+                secureTextEntry: isHide,
                 value: values.password
               }}
               containerStyles={{ paddingBottom: 10, paddingHorizontal: 20 }}
+              textRight='Hide'
+              textRightStyles={{
+                textTransform:'uppercase',
+                fontWeight: '500',
+                letterSpacing: 0.2
+              }}
+              onPressInRight={()=>{setIsHide(false)}}
+              onPressOutRight={()=>{setIsHide(true)}}
             />
 
             <TouchButton
