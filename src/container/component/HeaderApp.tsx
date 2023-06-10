@@ -24,7 +24,7 @@ const HeaderApp = (props: THeaderProps) => {
                 <TouchButton
                     onPress={()=>{
                         if (props.onPressLeft) {
-                            props.onPressLeft
+                            props.onPressLeft()
                         } else {
                             props.navigation.goBack()
                         }
@@ -39,7 +39,7 @@ const HeaderApp = (props: THeaderProps) => {
                 <TouchButton
                     onPress={()=>{
                         if (props.onPressRight) {
-                            props.onPressRight
+                            props.onPressRight()
                         } else {
                             props.navigation.goBack()
                         }
