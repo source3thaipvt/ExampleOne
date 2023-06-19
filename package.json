@@ -14,7 +14,8 @@
     "buildApk": "cd android && ./gradlew assembleRelease",
     "buildAab": "cd android && ./gradlew bundleRelease",
     "link": "react-native link",
-    "podm1": "arch -x86_64 pod install --repo-update",
+    "assets": "react-native-asset",
+    "podm1": "cd ios && arch -x86_64 pod install --repo-update",
     "pod": "yarn install && cd ios && rm -rf Podfile.lock && rm -rf Pods && pod install --repo-update"
   },
   "dependencies": {

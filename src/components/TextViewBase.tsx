@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TextProps, TextStyle, View, ViewStyle } from 'react-native'
 import React, { ReactNode } from 'react'
+import fonts from '../res/fonts'
 
 interface Props {
     children?: ReactNode
@@ -28,6 +29,7 @@ export default TextViewBase
 const styles = StyleSheet.create({
     text: {
         fontSize: 14,
-        letterSpacing: 1.8
+        letterSpacing: 1.8,
+        fontFamily: fonts.RobotoSlabRegular,
     }
 })
