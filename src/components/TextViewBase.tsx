@@ -29,7 +29,8 @@ export default TextViewBase
 const styles = StyleSheet.create({
     text: {
         fontSize: 14,
-        letterSpacing: 1.8,
+        letterSpacing: 1.2,
         fontFamily: fonts.RobotoSlabRegular,
+        color: 'black'
     }
 })

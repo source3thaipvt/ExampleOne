@@ -6205,7 +6205,7 @@ prompts@^2.0.1, prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@*, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@*, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -6344,6 +6344,13 @@ react-native-gradle-plugin@^0.71.18:
   version "0.71.19"
   resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.19.tgz"
   integrity sha512-1dVk9NwhoyKHCSxcrM6vY6cxmojeATsBobDicX0ZKr7DgUF2cBQRTKsimQFvzH8XhOVXyH8p4HyDSZNIFI8OlQ==
+
+react-native-otp-textinput@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-otp-textinput/-/react-native-otp-textinput-1.0.1.tgz#1379c2994556c5c91a6b7cb69010469dbf82cbb3"
+  integrity sha512-fTtZ9+rWFVRbVNo8JAzZCiXIZSWaoReydVvY/EiJUzkO1zYckJNs1qpoz38GVj6lojH7yZcGeDvhcrB/H/0AFA==
+  dependencies:
+    prop-types "^15.6.2"
 
 react-native-safe-area-context@^4.5.3:
   version "4.6.4"

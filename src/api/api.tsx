@@ -1,9 +1,11 @@
 import axios from "axios"
 
+const BaseURL = 'https://dummyjson.com/'
+
 class Api {
     async postLogin(username: string, password: string) {
         return await axios.post(
-            'https://dummyjson.com/auth/login',
+            BaseURL + 'auth/login',
             {
                 username,
                 password

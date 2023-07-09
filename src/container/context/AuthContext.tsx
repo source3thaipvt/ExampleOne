@@ -12,6 +12,7 @@ export interface TAuthContext {
     user: Object | null,
     isLoading: boolean,
     setIsLoading: (visible: boolean) => void
+    erorMsg: string,
 }
 
 export const AuthContext = createContext<TAuthContext>({
@@ -21,18 +22,20 @@ export const AuthContext = createContext<TAuthContext>({
     user: null,
     isLoading: false,
     setIsLoading: () => { },
+    erorMsg: '',
 });
 
 const AuthProvider = ({ children }: any) => {
     const [isLoading, setLoading] = useState(false)
     const [userToken, setUserToken] = useState(null)
     const [user, setUser] = useState(null)
+    const [erorMsg, setErorMsg] = useState('')
     const login = async (username: string, password: string) => {
         setLoading(true)
+        setErorMsg('')
         const timerOut = setTimeout(() => {
             setLoading(false)
         }, 5000);
-        return
         try {
             // const res = await api.postLogin('kminchelle', '0lelplR')
             const res = await api.postLogin(username, password)
@@ -47,6 +50,7 @@ const AuthProvider = ({ children }: any) => {
                 setLoading(false)
                 clearTimeout(timerOut)
                 console.log('Login error',);
+                setErorMsg('Tên đăng nhập hoặc mật khẩu không đúng')
             }
         } catch (error) {
             setLoading(false)
@@ -64,7 +68,6 @@ const AuthProvider = ({ children }: any) => {
     }
     const setIsLoading = (visible: boolean) => {
         setLoading(visible)
-        console.log('setIsLoading');
     }
     const isLoggedIn = async () => {
         try {
@@ -81,7 +84,7 @@ const AuthProvider = ({ children }: any) => {
         isLoggedIn()
     },[])
     return (
-        <AuthContext.Provider value={{ login, logout, userToken, user, isLoading, setIsLoading }}>
+        <AuthContext.Provider value={{ login, logout, userToken, user, isLoading, setIsLoading, erorMsg }}>
             {children}
         </AuthContext.Provider>
     )

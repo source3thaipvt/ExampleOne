@@ -13,8 +13,6 @@ interface Props { }
 
 const App = () => {
     const isDarkMode = useColorScheme() == 'dark'
-    
- 
     useEffect(() => {
         const setAnalytic = async () => {
             // Analytics automatically tracks some information about screens in your application
@@ -38,12 +36,12 @@ const App = () => {
                             }
                         }}
                     >
-                <AppContainer />
+                        <AppContainer />
                     </NavigationContainer>
                     <Loading />
                 </SafeAreaView>
             </AuthProvider>
-            </Provider>
+        </Provider>
     )
 }
 

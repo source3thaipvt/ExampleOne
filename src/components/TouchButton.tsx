@@ -17,6 +17,7 @@ const TouchButton = (props: Props) => {
       paddingHorizontal: 18,
       justifyContent: 'center',
       alignItems:'center',
+      flexDirection: 'row',
       ...props.containerStyles
     }}
     {...props}

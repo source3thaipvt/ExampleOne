@@ -10,7 +10,6 @@ import { Formik } from 'formik'
 import { loginPhoneValidateSchema, loginValidateSchema } from '../../../utils/Validations'
 // import { showToast } from '../../../utils/Utils'
 import auth from '@react-native-firebase/auth';
-import api from '../../../api/api'
 import { AuthContext } from '../../context/AuthContext'
 import { useAppDispatch } from '../../../redux/hooks'
 import { setLoading } from '../../../redux/auth/authSlice'
@@ -18,67 +17,71 @@ import { setLoading } from '../../../redux/auth/authSlice'
 const LoginScreen = (props: any) => {
   const [isHide, setIsHide] = useState(true)
   const [isSwitchLogin, setSwitchLogin] = useState(true)
-  const {login, logout, setIsLoading} = useContext(AuthContext)
+  const [confirm, setConfirm] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const { login, logout, setIsLoading, erorMsg } = useContext(AuthContext)
+
   const dispatch = useAppDispatch()
   const initValues = {
     username: '',
     password: ''
   }
+  function onAuthStateChanged(user: any) {
+    if (user) {
+      console.log("user,dddd", user);
+
+    }
+  }
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
   const onSubmit = async (values: { username: string, password: string }, resetForm: any, setErrors: any) => {
     Keyboard.dismiss()
-    console.log(values)
-    // dispatch(setLoading(true))
-    // setTimeout(()=>{
-    //   dispatch(setLoading(false))
-    // },2000)
-    login(values.username, values.password)
-    // setLoading(true)
-    return  
     if (isSwitchLogin) {
-      if (values.username.toLowerCase() != 'admin' && values.password.toLocaleLowerCase() != '123456') {
-        console.log('eeeeee');
-        setErrors( {username: '', password: 'Tên đăng nhập hoặc mật khẩu không đúng'})
-        return
+      await login(values.username, values.password)
+      // const res = await api.postLogin('kminchelle', '0lelplR')
+      if (erorMsg.length > 0) {
+        setErrors({ username: '', password: erorMsg })
       }
-      const res = await api.postLogin('kminchelle','0lelplRs')
-      console.log("res, res", res)
-      
+    } else {
+      console.log(values.username.slice(1));
+      const aer = auth().verifyPhoneNumber(`+84${values.username.slice(1)}`)
+      console.log(aer)
       return
-    }
-    auth()
-      .signInWithEmailAndPassword(values.username.toLocaleLowerCase(), values.password)
-      .then(() => {
-        console.log('User account created & signed in!');
-        NavigationService.navigate(ScreenName.HOMESCREEN)
+      const confirmation = await auth().signInWithPhoneNumber(`+84${values.username.slice(1)}`).then((e) => {
+        console.log("eeeeeeee", e);
+
       })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
-          console.log('Tên đăng nhập hoặc mật khẩu không đúng');
-        }
+        .catch(err => {
+          console.log("errerr", err);
 
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-          console.log('Tên đăng nhập hoặc mật khẩu không đúng');
-        }
+        })
+      setConfirm(confirmation)
+      NavigationService.navigate(ScreenName.OTPSCREEN, {
+        confirmation
+      })
+      console.log("confirmation", confirmation);
 
-        console.error(error);
-      });
+    }
+
   }
   return (
     <View style={styles.container}>
-      <View style={{ height: sizes._screen_height * 0.2 }} />
+      <View style={{ height: sizes._screen_height * 0.12 }} />
+      <TextViewBase title='Đăng nhập' containerStyles={{ marginVertical: 28 }} textStyles={{ fontSize: 24, fontWeight: '700' }} />
       <Formik
         initialValues={initValues}
-        onReset={ values =>{
+        onReset={values => {
           console.log(values);
-          
+
         }}
-        onSubmit={(values, {resetForm, setErrors}) => onSubmit(values,resetForm, setErrors)}
+        onSubmit={(values, { resetForm, setErrors }) => onSubmit(values, resetForm, setErrors)}
         validationSchema={isSwitchLogin ? loginValidateSchema : loginPhoneValidateSchema}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, resetForm, setErrors, setValues, setTouched }) => (
-          <>
+          <View style={{ alignItems: 'center' }}>
             <InputBase
               initValue={values.username}
               onChangeText={handleChange('username')}
@@ -91,7 +94,7 @@ const LoginScreen = (props: any) => {
                 value: values.username,
                 keyboardType: isSwitchLogin ? 'default' : 'phone-pad'
               }}
-              containerStyles={{ paddingBottom: 15, paddingHorizontal: 20, }}
+              containerStyles={{ paddingBottom: 15 }}
             />
             {isSwitchLogin && <InputBase
               initValue={values.password}
@@ -105,7 +108,7 @@ const LoginScreen = (props: any) => {
                 secureTextEntry: isHide,
                 value: values.password
               }}
-              containerStyles={{ paddingBottom: 10, paddingHorizontal: 20 }}
+              containerStyles={{ paddingBottom: 10 }}
               textRight='Hide'
               textRightStyles={{
                 textTransform: 'uppercase',
@@ -120,18 +123,22 @@ const LoginScreen = (props: any) => {
               containerStyles={{ ...styles.btn_login }}
               onPress={handleSubmit}
             >
-              <TextViewBase title='Login' textStyles={styles.txt_login} />
+              <TextViewBase title='Đăng nhập' textStyles={styles.txt_login} />
             </TouchButton>
             <TouchButton
               containerStyles={{ ...styles.btn_switch }}
-              onPress={()=>{
-                resetForm({values: initValues})
+              onPress={async () => {
+                resetForm({ values: initValues })
                 setSwitchLogin(!isSwitchLogin)
+                confirm.confirm('111111').then((user) => {
+                  console.log('dsadsdsaddddd', user);
+
+                })
               }}
             >
-              <TextViewBase title={isSwitchLogin ? 'Sign with phone' : 'Sign with account'} textStyles={styles.txt_login} />
+              <TextViewBase title={isSwitchLogin ? 'Đăng nhập với số điện thoại' : 'Đăng nhập với tài khoản'} textStyles={styles.txt_login} />
             </TouchButton>
-          </>)}
+          </View>)}
       </Formik>
     </View>
   )
@@ -142,7 +149,7 @@ export default LoginScreen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center'
+    paddingHorizontal: 20,
   },
   btn_login: {
     marginTop: 40,
