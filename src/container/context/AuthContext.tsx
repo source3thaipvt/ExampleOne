@@ -9,7 +9,7 @@ export interface TAuthContext {
     login: (username: string, password: string) => void,
     logout: () => void,
     userToken: string | null,
-    user: Object | null,
+    user: any,
     isLoading: boolean,
     setIsLoading: (visible: boolean) => void
     erorMsg: string,
@@ -45,7 +45,7 @@ const AuthProvider = ({ children }: any) => {
                 AsyncStorage.setItem('USER_TOKEN', res.data.token)
                 setLoading(false)
                 clearTimeout(timerOut)
-                NavigationService.navigate(ScreenName.HOMESCREEN)
+                NavigationService.reset(ScreenName.HOMESCREEN)
             } else {
                 setLoading(false)
                 clearTimeout(timerOut)
@@ -59,12 +59,16 @@ const AuthProvider = ({ children }: any) => {
 
 
     }
-    const logout = () => {
+    const logout = async () => {
+        setLoading(true)
         setUserToken(null)
         setUser(null)
-        AsyncStorage.removeItem('USER_TOKEN')
-        setLoading(false)
-        console.log('logout',);
+        await AsyncStorage.removeItem('USER_TOKEN')
+        setTimeout(() => {
+            setLoading(false)
+            console.log('logout   ', userToken, user);
+            NavigationService.reset(ScreenName.LOGINSCREEN)
+        }, 2000)
     }
     const setIsLoading = (visible: boolean) => {
         setLoading(visible)
@@ -80,9 +84,9 @@ const AuthProvider = ({ children }: any) => {
             console.log('isLogged in error ', error)
         }
     }
-    useEffect(()=>{
+    useEffect(() => {
         isLoggedIn()
-    },[])
+    }, [])
     return (
         <AuthContext.Provider value={{ login, logout, userToken, user, isLoading, setIsLoading, erorMsg }}>
             {children}

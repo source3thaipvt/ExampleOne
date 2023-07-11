@@ -1,24 +1,34 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { TPost } from "../../container/screens/home/HomeScreen";
 
-const initialState:{
-    tasks: any[]
+const initialState: {
+  posts: TPost[],
+  skip: number,
 } = {
-  tasks: [],
+  posts: [],
+  skip: 0,
 };
 
 const postSlice = createSlice({
   name: "post",
   initialState,
   reducers: {
-    addTodo: (state, action) => {
-      state.tasks.push({ id: Date.now(), text: action.payload });
+    addPosts: (state, action: { payload: TPost[] }) => {
+      const newState = [...state.posts, ...action.payload]
+      state.posts = newState;
     },
-    deleteTodo: (state, action) => {
-      state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+    removePost: (state, action: { payload: number }) => {
+      state.posts = state.posts.filter((post) => post.id !== action.payload);
     },
+    resetPosts: (state, action: { payload: TPost[] }) => {
+      state.posts = action.payload
+    },
+    setSkip: (state, action: { payload: number }) => {
+      state.skip = action.payload
+    }
   },
 });
 
-export const { addTodo, deleteTodo } = postSlice.actions;
+export const { removePost, addPosts, resetPosts, setSkip } = postSlice.actions;
 
 export default postSlice.reducer;

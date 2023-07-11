@@ -11,6 +11,7 @@ interface Props {
     onChangeText: (text: string) => void,
     containerStyles?: ViewStyle
     boxStyles?: ViewStyle,
+    rightStyles?: ViewStyle,
     textInputProps?: TextInputProps,
     onBlur?: (e: any) => void;
     onFocus?: (e: any) => void;
@@ -71,7 +72,7 @@ export default class InputBase extends Component<Props, State> {
         })
     }
     render() {
-        const { isError, initValue, placeholder, captionError, containerStyles, boxStyles, iconLeft, iconRight, onPressLeft, onPressRight, textRight, textRightStyles, onPressOutRight, onPressInRight } = this.props
+        const { isError, initValue, placeholder, captionError, containerStyles, boxStyles, iconLeft, iconRight, onPressLeft, onPressRight, textRight, textRightStyles, onPressOutRight, onPressInRight, rightStyles} = this.props
         const { value, focus, error, disable } = this.state
 
         return (
@@ -110,7 +111,7 @@ export default class InputBase extends Component<Props, State> {
 
                     {iconRight || textRight &&
                         <TouchButton
-                            containerStyles={{ paddingHorizontal: 10, right: -8 }}
+                            containerStyles={{ paddingHorizontal: 10, right: -8 ,...rightStyles}}
                             onPress={onPressRight}
                             onPressIn={onPressInRight}
                             onPressOut={onPressOutRight}

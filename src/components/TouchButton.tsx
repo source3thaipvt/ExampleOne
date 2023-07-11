@@ -23,7 +23,7 @@ const TouchButton = (props: Props) => {
     {...props}
     >
       {props.title ? <TextViewBase>{props?.title ?? 'Defaut Button'}</TextViewBase> :
-        props.icon && <Image source={props.icon ?? images.ic_back_black} style={{ height: 14, width: 14 }} resizeMode='contain' />}
+        props.icon && <Image source={props.icon ?? images.ic_back_black} style={{ height: 20, width: 20 }} resizeMode='contain' />}
       {props.children}
     </TouchableOpacity>
   )

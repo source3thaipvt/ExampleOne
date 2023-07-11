@@ -1,5 +1,5 @@
 import { Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import NavigationService from '../base/NavigationService'
 import { ScreenName } from '../base/AppContainer'
 import TouchButton from '../../../components/TouchButton'
@@ -18,13 +18,13 @@ const LoginScreen = (props: any) => {
   const [isHide, setIsHide] = useState(true)
   const [isSwitchLogin, setSwitchLogin] = useState(true)
   const [confirm, setConfirm] = useState<any>(null);
-  const [user, setUser] = useState<any>(null);
+  // const [user, setUser] = useState<any>(null);
   const { login, logout, setIsLoading, erorMsg } = useContext(AuthContext)
 
   const dispatch = useAppDispatch()
   const initValues = {
-    username: '',
-    password: ''
+    username: 'admin',
+    password: '123456'
   }
   function onAuthStateChanged(user: any) {
     if (user) {
@@ -36,15 +36,24 @@ const LoginScreen = (props: any) => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
-
+  useLayoutEffect(() => {
+   
+  }, [erorMsg]);
   const onSubmit = async (values: { username: string, password: string }, resetForm: any, setErrors: any) => {
     Keyboard.dismiss()
     if (isSwitchLogin) {
-      await login(values.username, values.password)
-      // const res = await api.postLogin('kminchelle', '0lelplR')
-      if (erorMsg.length > 0) {
-        setErrors({ username: '', password: erorMsg })
+      if (values.username.toLocaleLowerCase() == 'admin' && values.password == '123456') {
+        await login('kminchelle', '0lelplR')
+        if (erorMsg.length > 0) {
+          setErrors({ username: '', password: erorMsg })
+        }
+      } else {
+        await login(values.username, values.password)
+        if (erorMsg.length > 0) {
+          setErrors({ username: '', password: erorMsg })
+        }
       }
+
     } else {
       console.log(values.username.slice(1));
       const aer = auth().verifyPhoneNumber(`+84${values.username.slice(1)}`)

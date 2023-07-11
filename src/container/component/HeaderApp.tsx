@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View, ViewStyle } from 'react-native'
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 import { sizes } from '../../res/sizes';
 import TouchButton from '../../components/TouchButton';
 import images from '../../res/images';
 import TextViewBase from '../../components/TextViewBase';
 
-export interface THeaderProps {
+export interface THeaderProps extends PropsWithChildren {
     navigation: any,
     stylesContainer?: ViewStyle,
     stylesTitle?: ViewStyle,
@@ -20,9 +20,10 @@ export interface THeaderProps {
 const HeaderApp = (props: THeaderProps) => {
     return (
         <View style={{ ...styles.container, ...props?.stylesContainer }}>
+            {props.children}
             {props.iconLeft &&
                 <TouchButton
-                    onPress={()=>{
+                    onPress={() => {
                         if (props.onPressLeft) {
                             props.onPressLeft()
                         } else {
@@ -33,11 +34,11 @@ const HeaderApp = (props: THeaderProps) => {
                     containerStyles={{ ...styles.iconLeft }} />}
             {props.title &&
                 <View style={{ ...styles.viewTitle, ...props.stylesTitle }}>
-                    <TextViewBase title='Header App' textStyles={{ ...styles.textTitle }} />
+                    <TextViewBase title={props.title} textStyles={{ ...styles.textTitle }} />
                 </View>}
             {props.iconRight &&
                 <TouchButton
-                    onPress={()=>{
+                    onPress={() => {
                         if (props.onPressRight) {
                             props.onPressRight()
                         } else {
@@ -45,7 +46,7 @@ const HeaderApp = (props: THeaderProps) => {
                         }
                     }}
                     icon={props.iconRight ?? images.ic_back_black}
-                    containerStyles={{ ...styles.iconRight }} />}
+                    containerStyles={{ paddingEnd: 32, ...styles.iconRight }} />}
         </View>
     )
 }
@@ -66,7 +67,8 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.15,
         shadowRadius: 1.00,
-        elevation: 1
+        elevation: 1,
+
     },
     iconLeft: {
         width: 50,
