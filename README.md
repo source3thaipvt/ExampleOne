@@ -61,11 +61,13 @@ ProfileScreen
 
 ### Documents
 
+[React Navigation] (https://reactnavigation.org/docs/getting-started)
+
 [React-Native Firebase] (https://rnfirebase.io)
 
 [Redux-Toolkit] (https://redux-toolkit.js.org/introduction/getting-started)
 
-[Fake Api] (https://rnfirebase.io](https://dummyjson.com/docs)https://dummyjson.com/docs)
+[Fake Api] (https://dummyjson.com/docs)
 
 [Formik] (https://formik.org/docs/overview)
 
