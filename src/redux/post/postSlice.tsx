@@ -20,15 +20,13 @@ const postSlice = createSlice({
     removePost: (state, action: { payload: number }) => {
       state.posts = state.posts.filter((post) => post.id !== action.payload);
     },
-    resetPosts: (state, action: { payload: TPost[] }) => {
-      state.posts = action.payload
-    },
     setSkip: (state, action: { payload: number }) => {
       state.skip = action.payload
-    }
+    },
+    resetStatePost: () => initialState
   },
 });
 
-export const { removePost, addPosts, resetPosts, setSkip } = postSlice.actions;
+export const { removePost, addPosts, setSkip, resetStatePost } = postSlice.actions;
 
 export default postSlice.reducer;

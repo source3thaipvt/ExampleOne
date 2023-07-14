@@ -9,10 +9,12 @@ import InputBase from '../../../components/InputBase'
 import { Formik } from 'formik'
 import { loginPhoneValidateSchema, loginValidateSchema } from '../../../utils/Validations'
 // import { showToast } from '../../../utils/Utils'
-import auth from '@react-native-firebase/auth';
+import auth, { firebase } from '@react-native-firebase/auth';
 import { AuthContext } from '../../context/AuthContext'
 import { useAppDispatch } from '../../../redux/hooks'
-import { setLoading } from '../../../redux/auth/authSlice'
+import { setLoading, setToken, setUserInfo } from '../../../redux/auth/authSlice'
+import { randomIntFromInterval } from '../../../utils/Utils'
+import api from '../../../api/api'
 
 const LoginScreen = (props: any) => {
   const [isHide, setIsHide] = useState(true)
@@ -23,13 +25,19 @@ const LoginScreen = (props: any) => {
 
   const dispatch = useAppDispatch()
   const initValues = {
-    username: 'admin',
-    password: '123456'
+    username: '',
+    password: ''
   }
-  function onAuthStateChanged(user: any) {
+ 
+  async function onAuthStateChanged(user: any) {
     if (user) {
-      console.log("user,dddd", user);
-
+      console.log("firebase auth", user)
+      const rndInt = randomIntFromInterval(1, 100)
+        const resUser = await api.getUser(rndInt)
+      dispatch(setToken(user.uid))
+      dispatch(setUserInfo({...resUser.data, phone: user.phoneNumber, uid: user.uid}))
+      dispatch(setLoading(false))
+      NavigationService.reset(ScreenName.HOMESCREEN)
     }
   }
   useEffect(() => {
@@ -37,7 +45,7 @@ const LoginScreen = (props: any) => {
     return subscriber; // unsubscribe on unmount
   }, []);
   useLayoutEffect(() => {
-   
+
   }, [erorMsg]);
   const onSubmit = async (values: { username: string, password: string }, resetForm: any, setErrors: any) => {
     Keyboard.dismiss()
@@ -55,24 +63,31 @@ const LoginScreen = (props: any) => {
       }
 
     } else {
-      console.log(values.username.slice(1));
-      const aer = auth().verifyPhoneNumber(`+84${values.username.slice(1)}`)
-      console.log(aer)
-      return
-      const confirmation = await auth().signInWithPhoneNumber(`+84${values.username.slice(1)}`).then((e) => {
-        console.log("eeeeeeee", e);
-
-      })
-        .catch(err => {
-          console.log("errerr", err);
-
-        })
-      setConfirm(confirmation)
-      NavigationService.navigate(ScreenName.OTPSCREEN, {
-        confirmation
-      })
-      console.log("confirmation", confirmation);
-
+      let phoneNumber = ''
+      if (values.username[0] == '0' && values.username[1] != '0') {
+        phoneNumber = `+84${values.username.slice(1)}`
+      }else{
+        phoneNumber = `${values.username.slice()}`
+      }
+      dispatch(setLoading(true))
+      try {
+        setTimeout(async ()=>{
+          const res = await auth().signInWithPhoneNumber(phoneNumber)
+          if (res) {
+            console.log("res signinPhoneNumber", res)
+            setConfirm(res)
+            dispatch(setLoading(false))
+            NavigationService.navigate(ScreenName.OTPSCREEN, {
+              confirm: res,
+              phoneNumber: phoneNumber
+            })
+          }
+        },5000)
+        return
+      } catch (error) {
+        dispatch(setLoading(false))
+        setErrors({ username: 'Đã có lỗi xảy ra với quá trình xác thực số điện thoại', password: '' })
+      }
     }
 
   }
@@ -139,10 +154,6 @@ const LoginScreen = (props: any) => {
               onPress={async () => {
                 resetForm({ values: initValues })
                 setSwitchLogin(!isSwitchLogin)
-                confirm.confirm('111111').then((user) => {
-                  console.log('dsadsdsaddddd', user);
-
-                })
               }}
             >
               <TextViewBase title={isSwitchLogin ? 'Đăng nhập với số điện thoại' : 'Đăng nhập với tài khoản'} textStyles={styles.txt_login} />

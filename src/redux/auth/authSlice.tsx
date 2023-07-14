@@ -3,12 +3,12 @@ import { RootState } from "../store";
 import api from "../../api/api";
 
 const initialState: {
-  token: string | null,
-  user: any,
+  token: any,
+  userInfo: any,
   loading: boolean
 } = {
   token: null,
-  user: null,
+  userInfo: null,
   loading: false
 };
 
@@ -32,22 +32,23 @@ const authSlice = createSlice({
     setToken: (state, action) => {
       state.token = action.payload;
     },
-    setUser: (state, action) => {
-      state.user = action.payload;
+    setUserInfo: (state, action) => {
+      state.userInfo = action.payload;
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
-    }
+    },
+    resetStateAuth: () => initialState
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
     builder.addCase(fetchLogin.fulfilled, (state, action) => {
       // Add user to the state array
-      state.user = action.payload
+      state.userInfo = action.payload
     })
   }
 });
 
-export const { setToken, setUser, setLoading } = authSlice.actions;
+export const { setToken, setUserInfo, setLoading, resetStateAuth } = authSlice.actions;
 
 export default authSlice.reducer;

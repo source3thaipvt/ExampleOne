@@ -8,36 +8,68 @@ import { sizes } from '../../../res/sizes'
 import TouchButton from '../../../components/TouchButton'
 import OTPTextInput from 'react-native-otp-textinput'
 import moment from 'moment'
+import auth, { firebase } from '@react-native-firebase/auth';
+import { useAppDispatch } from '../../../redux/hooks'
+import { setLoading, setToken } from '../../../redux/auth/authSlice'
+import api from '../../../api/api'
 const OtpScreen = (props: any) => {
   const refOtp = useRef()
   const [reTextOTP, setReTextOTP] = useState('2:00')
-  useEffect(()=>{
+  const [otp, setOtp] = useState('')
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    console.log("chay may 1111")
+    // const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     countDownTime()
-    return () =>{
+    return () => {
       countDownTime()
+      // subscriber;
     }
-  },[])
-  const countDownTime = () =>{
+  }, [])
+  async function onAuthStateChanged(user: any) {
+    if (user) {
+      // dispatch(setToken(user.uid))
+      // dispatch(setUser({phoneNumber: user.phoneNumber, uid: user.uid}))
+      // dispatch(setLoading(false))
+      // NavigationService.reset(ScreenName.HOMESCREEN)
+    }
+  }
+  const countDownTime = () => {
     const timeStart = moment().unix()
     let timeCurrent = timeStart
     const timeEnd = timeStart + 120
-    
-    const setTime = setInterval(()=>{
+
+    const setTime = setInterval(() => {
       if (timeCurrent == timeEnd) {
         clearInterval(setTime)
         setReTextOTP("Gửi lại")
-      }else{
+      } else {
         timeCurrent = moment().unix()
         let text = reTextOTP
-        const modSecond= (timeEnd - timeCurrent)%60
-        const minunes = Math.floor((timeEnd - timeCurrent)/60)
+        const modSecond = (timeEnd - timeCurrent) % 60
+        const minunes = Math.floor((timeEnd - timeCurrent) / 60)
         let second = modSecond < 10 ? `0${modSecond}` : modSecond
         return setReTextOTP(`0${minunes}:${second}`)
       }
-    },1000)
+    }, 1000)
   }
-  const reSendOTP = () =>{
+  const reSendOTP = async () => {
+    await auth().signInWithPhoneNumber(props.route.params.phoneNumber);
     countDownTime()
+  }
+  const onChangeText = async (value: string) => {
+    setOtp(value)
+    if (value.length == 6) {
+      onConfirm(value)
+    }
+  }
+  const onConfirm = async (value: string) =>{
+    try {
+      dispatch(setLoading(true))
+      await props.route.params.confirm.confirm(value)
+    } catch (error) {
+      dispatch(setLoading(false))
+    }
   }
   return (
     <View style={styles.container}>
@@ -55,25 +87,23 @@ const OtpScreen = (props: any) => {
         ref={refOtp}
         inputCount={6}
         autoFocus
-        handleTextChange={(value: string) => {
-          console.log("first", value)
-        }}
+        handleTextChange={onChangeText}
         textInputStyle={styles.box_otp}
       />
 
       <View style={{ alignItems: 'center' }}>
         <TouchButton
           containerStyles={{ ...styles.btn_confirm }}
-          onPress={() => { }}
+          onPress={() => { onConfirm(otp) }}
         >
-          <TextViewBase title='Đăng nhập' textStyles={styles.txt_confirm} />
+          <TextViewBase title='Xác nhận' textStyles={styles.txt_confirm} />
         </TouchButton>
       </View>
-      
+
       <View style={styles.line_3}>
-        <TextViewBase title='Bạn không nhận được mã OTP?' textStyles={{color: 'gray'}}/>
+        <TextViewBase title='Bạn không nhận được mã OTP?' textStyles={{ color: 'gray' }} />
         <TouchButton disabled={reTextOTP != 'Gửi lại'} onPress={reSendOTP} >
-          <TextViewBase title={reTextOTP} textStyles={{color: '#47B831'}}/>
+          <TextViewBase title={reTextOTP} textStyles={{ color: '#47B831' }} />
         </TouchButton>
       </View>
     </View>
@@ -96,19 +126,19 @@ const styles = StyleSheet.create({
   txt_confirm: {
     color: 'white'
   },
-  box_otp:{
+  box_otp: {
     borderWidth: 2,
     borderBottomWidth: 2,
     borderRadius: 9,
     maxWidth: 50,
     width: sizes._screen_width * 0.115
   },
-  line_3:{
+  line_3: {
     flexDirection: 'row',
     marginTop: 15,
     alignItems: 'center'
   },
-  text_3:{
+  text_3: {
     color: 'gray'
   }
 })

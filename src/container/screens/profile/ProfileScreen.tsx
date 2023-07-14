@@ -4,20 +4,25 @@ import images from '../../../res/images'
 import HeaderApp from '../../component/HeaderApp'
 import { AuthContext } from '../../context/AuthContext'
 import TextViewBase from '../../../components/TextViewBase'
-import { useAppSelector } from '../../../redux/hooks'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import _ from 'lodash'
 import { TUser } from '../home/HomeScreen'
 import api from '../../../api/api'
 import fonts from '../../../res/fonts'
 import TouchButton from '../../../components/TouchButton'
+import { resetStateAuth, setLoading, setToken } from '../../../redux/auth/authSlice'
+import auth, { firebase } from '@react-native-firebase/auth';
+import NavigationService from '../base/NavigationService'
+import { ScreenName } from '../base/AppContainer'
+import { resetStatePost } from '../../../redux/post/postSlice'
 
 const ProfileScreen = (props: any) => {
     const [data, setData] = useState(props.route.params.data)
     const { users } = useAppSelector(state => state.users)
-    const { logout } = useContext(AuthContext)
+    const { logout, user } = useContext(AuthContext)
+    const dispatch = useAppDispatch()
     useEffect(() => {
-        const isAuth = props.route.params.isAuth
-        if (isAuth) {
+        if (!data.company) {
             let newUser = _.find(users, (e) => e.id == data.id)
             setData(newUser)
             if (!newUser) {
@@ -45,6 +50,25 @@ const ProfileScreen = (props: any) => {
             </Text>
         )
     }
+    const handleLogout = async () => {
+        if (user) {
+            logout()
+        } else {
+            dispatch(setLoading(true))
+            setTimeout(async () => {
+                auth().signOut()
+                    .then(() => {
+                        dispatch(setLoading(false))
+                        dispatch(resetStateAuth())
+                        NavigationService.reset(ScreenName.LOGINSCREEN)
+                    })
+                    .catch(() => {
+                        dispatch(setLoading(false))
+                    })
+            }, 2000)
+        }
+        dispatch(resetStatePost())
+    }
     return (
         <View style={styles.container}>
             <HeaderApp navigation={props.navigation} title='Hồ sơ' iconLeft={images.ic_back_black} />
@@ -65,9 +89,9 @@ const ProfileScreen = (props: any) => {
                     <LineTextContent label='Công ty' content={`${data?.company?.title}`} />
                 </View>
                 {props.route.params.isAuth &&
-                    <TouchButton 
-                    onPress={logout}
-                    containerStyles={{ backgroundColor: 'red', borderRadius: 8, marginTop: 40 }}>
+                    <TouchButton
+                        onPress={handleLogout}
+                        containerStyles={{ backgroundColor: 'red', borderRadius: 8, marginTop: 40 }}>
                         <TextViewBase title='Đăng xuất' textStyles={{ color: '#ffffff' }} />
                     </TouchButton>}
             </ScrollView>

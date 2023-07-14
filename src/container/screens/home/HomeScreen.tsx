@@ -8,7 +8,7 @@ import TouchButton from '../../../components/TouchButton'
 import { setLoading } from '../../../redux/auth/authSlice'
 import api from '../../../api/api'
 import ItemPost from './component/ItemPost'
-import { addPosts, removePost, resetPosts, setSkip } from '../../../redux/post/postSlice'
+import { addPosts, removePost, resetStatePost } from '../../../redux/post/postSlice'
 import _, { debounce } from 'lodash'
 import { addUser, resetUsers } from '../../../redux/users/userSlice'
 import TextViewBase from '../../../components/TextViewBase'
@@ -47,29 +47,34 @@ const defaultSearch: {
 }
 const HomeScreen = (props: any) => {
     const { userToken, user } = useContext(AuthContext)
-    const [isLoad, setIsLoad] = useState(false)
-    const [search, setSearch] = useState(defaultSearch)
-    const [isRefreshing, setIsRefreshing] = useState(false)
-    const { skip, posts } = useAppSelector(state => state.post)
+    const { userInfo } = useAppSelector(state => state.auth)
+    const { posts } = useAppSelector(state => state.post)
     const { users } = useAppSelector(state => state.users)
-    let limit = 10
+    const [loadingMore, setLoadingMore] = useState(false)
+    const [skip, setSkip] = useState<any>(0)
+    const [lastSkip, setLastSkip] = useState<any>(0)
+    const [data, setData] = useState<TPost[]>([])
+    const [search, setSearch] = useState(defaultSearch)
+    const [dataUser, setDataUser] = useState(user ?? userInfo)
+    const [isRefreshing, setIsRefreshing] = useState(false)
+    let limit = 7
+    let onEndReachedCalledDuringMomentum = true
     const dispatch = useAppDispatch()
     useEffect(() => {
-        callPosts()
+        getPosts()
     }, [])
-    const callPosts = async (skipNumber?: number) => {
-        let countSkip = skipNumber ?? skip
-        setIsLoad(true)
+    const getPosts = async (loader = true) => {
+        console.log("getPosts")
+        setLoadingMore(loader)
         setTimeout(async () => {
             try {
-                const res = await api.getPost(limit, countSkip)
-                setIsLoad(false)
+                const res = await api.getPost(limit, skip)
                 if (res && res.status == 200) {
                     let arrPostUserId = _.map(res.data.posts, 'userId')
                     const uniqArrPostUserId: number[] = _.uniq(arrPostUserId);
                     const arrUserId = _.map(users, 'id')
                     const arrCallUser = _.difference(uniqArrPostUserId, arrUserId)
-                    let newArrUsers: TUser[] = await callUsers(arrCallUser)
+                    let newArrUsers: TUser[] = await getUsers(arrCallUser)
                     const listUsers: TUser[] = [...users, ...newArrUsers]
                     let listPost: TPost[] = res.data.posts
                     for (const iterator in listPost) {
@@ -77,20 +82,19 @@ const HomeScreen = (props: any) => {
                         const user = _.find(listUsers, (e) => e.id == post.userId)
                         listPost[iterator] = { ...listPost[iterator], user: user }
                     }
-                    if (countSkip == 0) {
-                        dispatch(resetPosts([]))
-                    }
                     dispatch(addPosts(listPost))
-                    if (res.data.total > countSkip) {
-                        dispatch(setSkip(countSkip + 10))
-                    }
+                    setData([...data, ...listPost])
+                    setLastSkip(res.data.total)
+                    console.log("data", data.length)
+                    setSkip(data.length + listPost.length)
                 }
-            } catch (error) {
-                setIsLoad(false)
+            } finally {
+                setLoadingMore(false)
             }
         }, 2000)
     }
-    const callUsers = async (data: number[]) => {
+    const getUsers = async (data: number[]) => {
+        console.log("getUsers")
         let newArrUsers: TUser[] = []
         for (const iterator of data) {
             const resUser = await api.getUser(iterator)
@@ -102,27 +106,34 @@ const HomeScreen = (props: any) => {
         return newArrUsers
     }
     const onRefesh = () => {
+        console.log("onRefesh")
         setIsRefreshing(true)
         if (search.visable) {
             onSearchText(search.text, true)
-
             return
         }
-        dispatch(setSkip(0))
-        setTimeout(() => {
-            callPosts(0)
+        dispatch(resetStatePost())
+        try {
+        } catch (error) {
+            setSkip(0)
+            getPosts()
+        } finally {
             setIsRefreshing(false)
-        }, 2000)
+        }
     }
-    const onLoadMore = () => {
-        callPosts()
+    const onLoadMore = () => {  
+        if (onEndReachedCalledDuringMomentum || skip >= lastSkip) {
+            return
+        }
+        console.log("Loadmore")
+        getPosts();
     }
     const goProfile = (params: Object) => {
         NavigationService.navigate(ScreenName.PROFILESCREEN, params)
     }
     const onSearchText = debounce(async (text: string, visable) => {
         if (!visable) {
-            setIsLoad(true)
+            setLoadingMore(true)
         }
         setSearch({ ...search, text: text })
         setTimeout(async () => {
@@ -132,7 +143,7 @@ const HomeScreen = (props: any) => {
                 const uniqArrPostUserId: number[] = _.uniq(arrPostUserId);
                 const arrUserId = _.map(users, 'id')
                 const arrCallUser = _.difference(uniqArrPostUserId, arrUserId)
-                let newArrUsers: TUser[] = await callUsers(arrCallUser)
+                let newArrUsers: TUser[] = await getUsers(arrCallUser)
                 const listUsers: TUser[] = [...users, ...newArrUsers]
                 let listPost: TPost[] = res.data.posts
                 for (const iterator in listPost) {
@@ -140,11 +151,11 @@ const HomeScreen = (props: any) => {
                     const user = _.find(listUsers, (e) => e.id == post.userId)
                     listPost[iterator] = { ...listPost[iterator], user: user }
                 }
-                setIsLoad(false)
+                setLoadingMore(false)
                 setIsRefreshing(false)
                 setSearch({ ...search, data: listPost, text: text })
             } else {
-                setIsLoad(false)
+                setLoadingMore(false)
                 setIsRefreshing(false)
             }
         }, 2000)
@@ -161,12 +172,12 @@ const HomeScreen = (props: any) => {
                     !search.visable ?
                         <TouchButton
                             style={{ flexDirection: 'row', padding: 20 }}
-                            onPress={() => { goProfile({ data: user, isAuth: true }) }}>
+                            onPress={() => { goProfile({ data: dataUser, isAuth: true }) }}>
                             <Image
-                                source={{ uri: user?.image ?? 'https://robohash.org/autquiaut.png' }}
+                                source={{ uri: dataUser?.image ?? 'https://robohash.org/autquiaut.png' }}
                                 style={{ width: 30, backgroundColor: 'gray', height: 30, borderRadius: 90 }} />
                             <TextViewBase
-                                title={`${user?.firstName} ${user?.lastName}`}
+                                title={`${dataUser?.firstName} ${dataUser?.lastName}`}
                                 containerStyles={{ marginLeft: 5, justifyContent: 'center' }} />
                         </TouchButton>
                         :
@@ -182,11 +193,11 @@ const HomeScreen = (props: any) => {
             </HeaderApp>
             <View>
                 <FlatList
-                    data={search.text.length > 0 ? search.data : posts}
+                    data={search.text.length > 0 ? search.data : data}
                     renderItem={({ item }) => {
                         return <ItemPost
                             item={item}
-                            onPressUser={(user: any) => { goProfile({ data: user }) }} />
+                            onPressUser={(dataUser: any) => { goProfile({ data: dataUser }) }} />
                     }}
                     contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 130 }}
                     keyExtractor={(e, index) => `ItemPost ${index}`}
@@ -194,6 +205,8 @@ const HomeScreen = (props: any) => {
                         return <View style={{ height: 20 }} />
                     }}
                     onEndReached={search.visable ? () => { } : onLoadMore}
+                    onEndReachedThreshold={0}
+                    onMomentumScrollBegin={()=>{ onEndReachedCalledDuringMomentum= false}}
                     refreshControl={
                         <RefreshControl
                             refreshing={isRefreshing}
@@ -202,7 +215,7 @@ const HomeScreen = (props: any) => {
                         />
                     }
                     ListEmptyComponent={() => {
-                        if (!isLoad) {
+                        if (!loadingMore) {
                             return (
                                 <View style={{ marginTop: 80, alignItems: 'center' }}>
                                     <TextViewBase title='Không có dữ liệu' textStyles={{ fontSize: 24 }} />
@@ -211,9 +224,10 @@ const HomeScreen = (props: any) => {
                         }
                     }}
                     ListFooterComponent={() => {
-                        if (isLoad) {
-                            return <ActivityIndicator color="red" size={'large'} style={{ justifyContent: 'center', alignItems: 'center' }} />
+                        if (!loadingMore) {
+                            return null
                         }
+                        return <ActivityIndicator color="red" size={'large'} style={{ justifyContent: 'center', alignItems: 'center' }} />
                     }}
                 />
             </View>

@@ -37,6 +37,13 @@
             {
               "client_id": "733395461945-nak66fp750u33slfljf5ag87b7ja1mk0.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "733395461945-ev18quaome94m01msrr2uh5o5pkoifda.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.source3thaipvt.exampleone"
+              }
             }
           ]
         }

@@ -4,6 +4,7 @@ import TextViewBase from '../../../../components/TextViewBase'
 import images from '../../../../res/images'
 import { TPost } from '../HomeScreen'
 import TouchButton from '../../../../components/TouchButton'
+import moment from 'moment'
 
 const ItemPost = memo((props: { item: TPost, onPressUser: (user: any) => void }) => {
     const item = props.item
@@ -13,7 +14,7 @@ const ItemPost = memo((props: { item: TPost, onPressUser: (user: any) => void })
                 style={{ ...styles.row }}
                 onPress={() => { props.onPressUser(item.user) }}>
                 <Image source={{ uri: item?.user?.image ?? 'https://robohash.org/hicveldicta.png?size=50x50&set=set1' }} style={styles.avt} />
-                <TextViewBase title={`${item?.user?.firstName} ${item?.user?.lastName}`} containerStyles={{ flex: 1 }} />
+                <TextViewBase title={`${item?.user?.firstName} ${item?.user?.lastName} ${item.id}`} containerStyles={{ flex: 1 }} />
             </TouchButton>
 
             <TextViewBase title={item.title}
@@ -27,10 +28,11 @@ const ItemPost = memo((props: { item: TPost, onPressUser: (user: any) => void })
             </View>
             <View style={{ ...styles.row }}>
                 <View style={{ flexDirection: 'row' }}>
-                    {item.tags.map(e => {
+                    {item.tags.map((e, index) => {
                         return (
                             <TextViewBase title={`#${e}`}
                                 containerStyles={{ paddingRight: 3 }}
+                                key={`keyTagPost ${e} ${index} ${moment().unix()}`}
                             />
                         )
                     })}

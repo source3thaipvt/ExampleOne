@@ -15,8 +15,8 @@
     "buildAab": "cd android && ./gradlew bundleRelease",
     "link": "react-native link",
     "assets": "react-native-asset",
-    "podm1": "cd ios && arch -x86_64 pod install --repo-update",
-    "pod": "yarn install && cd ios && rm -rf Podfile.lock && rm -rf Pods && pod install --repo-update"
+    "podm1": "cd ios && arch -x86_64 pod install",
+    "pod": "yarn install && cd ios && rm -rf Podfile.lock && rm -rf Pods && pod install"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.18.2",

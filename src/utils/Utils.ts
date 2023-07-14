@@ -13,4 +13,7 @@ export enum TypeRegEx {
 export const isCheckEmail = (value: string= 'dsad@gmai.com') => {
     return value.match(TypeRegEx.EMAIL)
 }
+export const randomIntFromInterval = (min: number, max: number) => { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
 
