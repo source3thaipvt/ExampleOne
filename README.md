@@ -1,7 +1,7 @@
 # Example demo one
 
 This is my first example project
-Using React Native (Hook), API, Redux, react-navigation, Firebase Auth, Formik, Yup.
+Using React Native (Hook), API, Redux, Node.js, react-navigation, Firebase Auth, Formik, Yup.
 
 ## 🚀 Quick start
 
